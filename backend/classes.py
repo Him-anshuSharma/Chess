@@ -94,6 +94,18 @@ class Game:
             new_x, new_y = new_position
             # Clear the old position
             self.board[old_x][old_y] = ''
+            if(self.board[new_x][new_y] != ''):
+                temp = self.board[new_x][new_y].split('-')
+                playerid = temp[0]
+                piece = temp[1]
+                for p in self.players.keys():
+                    if(p == playerid):
+                        for c in self.players[p]:
+                            if(c == piece):
+                                self.players[p].remove(c)
+
+
+
             # Update character's position
             character.set_position(new_x, new_y)
             # Place character in new position
