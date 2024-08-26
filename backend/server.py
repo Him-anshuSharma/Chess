@@ -33,7 +33,9 @@ async def handler(websocket):
                     for c in game.players['A' if turnA else 'B']:
                         l.append(c.name)
                     data = json.dumps({'type' : 'characters','data':l})
-                    print(data)
+                    if(len(l) == 0):
+                        websocket.send(json.dumps({'type':'over'}))
+                        return
                     await websocket.send(data)
                 else:
                     # Handle move failure if needed

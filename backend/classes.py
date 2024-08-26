@@ -125,6 +125,22 @@ class Game:
         return True
 
     def move_character(self, player_id, character_name, direction):
+        if(player_id == 'A'):
+            if(direction.upper() == 'F') :
+                direction = 'B'
+            elif(direction.upper() == 'B'):
+                direction = 'F'
+            elif(direction.upper() == 'BR'):
+                direction = 'FR'
+            elif(direction.upper() == 'FR'):
+                direction = 'BR'
+            elif(direction.upper() == 'BL'):
+                direction = 'FL'
+            elif(direction.upper() == 'FL'):
+                direction = 'BL'
+
+        print(direction)        
+
         character = next(c for c in self.players[player_id] if c.name == character_name)
         new_position = character.move(direction)
         if self.is_valid_move(player_id, character_name, new_position):

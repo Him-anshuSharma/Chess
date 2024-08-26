@@ -84,23 +84,6 @@
     #controls button:hover {
       background-color: #0056b3;
     }
-
-    /* Style for dynamic alert button */
-    #dynamic-button {
-      display: none; /* Hidden by default */
-      margin-top: 20px;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      background-color: #f44336;
-      color: white;
-      cursor: pointer;
-    }
-
-    #dynamic-button:hover {
-      background-color: #d32f2f;
-    }
   </style>
 </head>
 
@@ -126,7 +109,6 @@
     </select>
 
     <button onclick="makeMove()">Make Move</button>
-    <button id="dynamic-button" onclick="handleDynamicButtonClick()">OK</button>
   </div>
 
   <script>
@@ -155,7 +137,7 @@
 
         if (response.type === "error") {
           console.error("Server error:", response.error);
-          showDynamicButton(response.message);
+          showAlert(response.message);
         } else if (response.type === "character_list") {
           updateCharacterOptions(response.characters);
         } else if (response.type === "turn_update") {
@@ -164,7 +146,15 @@
         } else if (response.type === "characters") {
           console.log(response.data)
           updateCharacterOptions(response.data)
-        } else {
+        } else if(response.type === 'over'){
+          if(current_turn === 'A'){
+            showAlert('B won')
+          }
+          else{
+            showAlert('A won')
+          }
+        } 
+        else {
           console.log("response ", response)
           updateTurnInfo(response.curr);
           console.log("Parsed game state:", response.data);
@@ -195,7 +185,6 @@
 
     function updateTurnInfo(turn) {
       const turnInfo = document.getElementById("turn-info");
-      current_turn = turnInfo
       turnInfo.textContent = `Current Turn: ${turn}`;
     }
 
@@ -229,16 +218,8 @@
       });
     }
 
-    function showDynamicButton(message) {
-      const dynamicButton = document.getElementById("dynamic-button");
-      dynamicButton.textContent = message;
-      dynamicButton.style.display = "block";
-    }
-
-    function handleDynamicButtonClick() {
-      // Hide the button after clicking
-      document.getElementById("dynamic-button").style.display = "none";
-      // Additional actions can be added here if needed
+    function showAlert(message) {
+      alert(message);
     }
   </script>
 </body>
