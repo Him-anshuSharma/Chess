@@ -16,9 +16,27 @@ async def handler(websocket):
         async for message in websocket:
             data = json.loads(message)
             if data['type'] == 'move':
-                turnA = not turnA
-                await websocket.send(json.dumps({'type' : 'board','data':game.get_game_state(),'curr':'A' if turnA else 'B'}))
-                pass
+                # Determine which player is making the move
+                current_player = 'A' if turnA else 'B'
+                # Perform the move in the game
+                success = game.move_character(current_player, data['character'], data['direction'])
+                if success:
+                    # Switch turns
+                    turnA = not turnA
+                    # Send the updated game state and current turn to the client
+                    response = {
+                        'type': 'board',
+                        'data': game.get_game_state(),
+                        'curr': 'A' if turnA else 'B'
+                    }
+                    await websocket.send(json.dumps(response))
+                else:
+                    # Handle move failure if needed
+                    response = {
+                        'type': 'error',
+                        'message': 'Invalid move'
+                    }
+                    await websocket.send(json.dumps(response))
             elif data['type'] == 'init':
                 # Check which pieces to use based on player_id
                 player_a_p = data['playerA_pieces']

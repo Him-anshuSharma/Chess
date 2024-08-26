@@ -81,7 +81,12 @@ class Game:
                 character_list.append(c.upper())
         characters = []
         for c in character_list:
-            characters.append(Character(player_id=player_id, name=c))
+            if 'P' in c:
+                characters.append(Pawn(player_id=player_id, name=c))
+            elif c == 'H1':
+                characters.append(Hero1(player_id=player_id, name=c))
+            else:
+                characters.append(Hero2(player_id=player_id, name=c))
         
         print(f"Player ID: {player_id}, Character Names: {character_list}")
         print(f"Number of characters: {len(characters)}")
@@ -121,6 +126,7 @@ class Game:
 
     def move_character(self, player_id, character_name, direction):
         character = next(c for c in self.players[player_id] if c.name == character_name)
+        print(type(character))
         new_position = character.move(direction)
         if self.is_valid_move(player_id, character_name, new_position):
             old_x, old_y = character.position
