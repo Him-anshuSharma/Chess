@@ -12,6 +12,7 @@ game = Game()
 
 async def handler(websocket):
     turnA = True
+    history = ''
     try:
         async for message in websocket:
             data = json.loads(message)
@@ -22,11 +23,14 @@ async def handler(websocket):
                 if success:
                     # Switch turns
                     turnA = not turnA
+                    history = history + '\n' +current_player + '-' + data['character'] + ':' + data['direction'] + '\n'
+                        
                     # Send the updated game state and current turn to the client
                     response = {
                         'type': 'board',
                         'data': game.get_game_state(),
-                        'curr': 'A' if turnA else 'B'
+                        'curr': 'A' if turnA else 'B',
+                        'history' : history
                     }
                     await websocket.send(json.dumps(response))
                     l = []

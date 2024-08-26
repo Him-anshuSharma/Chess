@@ -158,6 +158,7 @@
           console.log("response ", response)
           updateTurnInfo(response.curr);
           console.log("Parsed game state:", response.data);
+          console.log('history:',response.history)
           updateBoard(response.data);
         }
       } catch (e) {
