@@ -38,8 +38,8 @@ async def handler(websocket):
                         l.append(c.name)
                     data = json.dumps({'type' : 'characters','data':l})
                     if(len(l) == 0):
-                        websocket.send(json.dumps({'type':'over'}))
-                        return
+                        await websocket.send(json.dumps({'type':'over'}))
+                        
                     await websocket.send(data)
                 else:
                     # Handle move failure if needed
