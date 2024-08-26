@@ -10,47 +10,36 @@ connected_clients = []
 myset = set()
 game = Game()
 
-async def handler(websocket, path):
-    player_id = None
-    connected_clients.append(websocket)
-
+async def handler(websocket):
+    turnA = True
     try:
         async for message in websocket:
             data = json.loads(message)
-            print("message :",data)
-            player_id = data['player_id']
-            if data['type'] == 'init':
-                if data['player_id'] not in myset:
-                    characters = []
-                    for char_data in data['characters']:
-                        if char_data == 'P':
-                            characters.append(Pawn(player_id, f'P{len(characters)+1}'))
-                        elif char_data == 'H1':
-                            characters.append(Hero1(player_id, f'H1'))
-                        elif char_data == 'H2':
-                            characters.append(Hero2(player_id, f'H2'))
-                    game.add_player(player_id, characters)
-                    myset.add(player_id)
-                    print("game players " , game.players)
-                    if len(game.players) == 2:
-                        game.turn = 'A'
-                    await broadcast(game.get_game_state())
+            if data['type'] == 'move':
+                turnA = not turnA
+                await websocket.send(json.dumps({'type' : 'board','data':game.get_game_state(),'curr':'A' if turnA else 'B'}))
+                pass
+            elif data['type'] == 'init':
+                # Check which pieces to use based on player_id
+                player_a_p = data['playerA_pieces']
+                player_b_p = data['playerB_pieces']
+                print(player_a_p,player_b_p)
+                game.add_player(player_id='A', character_names=player_a_p)
+                game.add_player(player_id='B', character_names=player_b_p)
+                await websocket.send(json.dumps({'mssg': 'success'}))
+            elif data['type'] == 'getBoard':
+                await websocket.send(json.dumps({'type' : 'board','data':game.get_game_state(),'curr':'A' if turnA else 'B'}))
+            elif data['type'] == 'characters':
+                l = []
+                for c in game.players[data['id']]:
+                    l.append(c.name)
+                data = json.dumps({'type' : 'characters','data':l})
+                print(data)
+                await websocket.send(data)
 
-            elif data['type'] == 'move':
-                player_id = data['player_id']
-                print(player_id , " " , game.turn)
-                if game.turn == player_id:
-                    success = game.move_character(player_id, data['character'], data['direction'])
-                    print('success ', success)
-                    if success:
-                        game.turn = 'B' if game.turn == 'A' else 'A'
-                        await broadcast(game.get_game_state())
-                    else:
-                        await websocket.send(json.dumps({'error': 'Invalid move'}))
-                else:
-                    await websocket.send(json.dumps({'error': 'Not your turn'}))
-    except:
-        print("invalid handler")
+    except Exception as e:
+        print(f"Exception occurred: {e}")
+        await websocket.send(json.dumps({'error': 'An error occurred'}))
 
 async def broadcast(message):
     for client in connected_clients:

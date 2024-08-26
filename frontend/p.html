@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turn-Based Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+      margin: 0;
+    }
+
+    #turn-info {
+      margin-bottom: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      text-shadow: 1px 1px 2px #aaa;
+      padding: 10px;
+      background-color: #e0e0e0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    #game-container {
+      display: grid;
+      grid-template-columns: repeat(5, 100px);
+      grid-template-rows: repeat(5, 100px);
+      gap: 5px;
+      margin-bottom: 20px;
+      border: 2px solid #333;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 10px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: #fff;
+      border: 2px solid #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      transition: background-color 0.3s ease;
+    }
+
+    .cell:hover {
+      background-color: #f0f0f0;
+    }
+
+    #controls {
+      text-align: center;
+      font-size: 18px;
+    }
+
+    #controls select,
+    #controls button {
+      margin: 5px;
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+
+    #controls button {
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+
+    #controls button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="turn-info">Current Turn: A</div>
+
+  <div id="game-container"></div>
+
+  <div id="controls">
+    <select id="character-select">
+      <!-- Options will be dynamically updated -->
+    </select>
+    <select id="direction-select">
+      <option value="">Select a direction</option>
+      <option value="F">F</option>
+      <option value="B">B</option>
+      <option value="L">L</option>
+      <option value="R">R</option>
+      <option value="FR">FR</option>
+      <option value="FL">FL</option>
+      <option value="BR">BR</option>
+      <option value="BL">BL</option>
+    </select>
+
+    <button onclick="makeMove()">Make Move</button>
+  </div>
+
+  <script>
+
+    const ws = new WebSocket("ws://localhost:8765");
+    var current_turn = 'A';
+
+    ws.onopen = () => {
+      console.log("Connected to the server");
+      const getBoard = {
+        type: "getBoard"
+      };
+      ws.send(JSON.stringify(getBoard));
+      const populateSelectors = {
+        type: "characters",
+        id: current_turn
+      }
+      ws.send(JSON.stringify(populateSelectors));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const rawData = event.data;
+        console.log("Raw data received:", rawData);
+
+        const response = JSON.parse(rawData);
+
+        if (response.error) {
+          console.error("Server error:", response.error);
+        } else if (response.type === "character_list") {
+          updateCharacterOptions(response.characters);
+        } else if (response.type === "turn_update") {
+          current_turn = response.current_turn;
+          updateTurnInfo(current_turn);
+        } else if (response.type === "characters") {
+          console.log(response.data)
+          updateCharacterOptions(response.data)
+        } else {
+          console.log("response ", response)
+          updateTurnInfo(response.curr);
+          console.log("Parsed game state:", response.data);
+          updateBoard(response.data);
+        }
+      } catch (e) {
+        console.error("Failed to parse response:", e);
+        console.error("Received data:", rawData);
+      }
+    };
+
+    function updateBoard(gameState) {
+      console.log("update board ", gameState);
+      const gameContainer = document.getElementById("game-container");
+      gameContainer.innerHTML = "";
+
+      const board = gameState;
+
+      for (let row = 0; row < board.length; row++) {
+        for (let col = 0; col < board[row].length; col++) {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          cell.textContent = board[row][col] || " ";
+          gameContainer.appendChild(cell);
+        }
+      }
+    }
+
+    function updateTurnInfo(turn) {
+      const turnInfo = document.getElementById("turn-info");
+      current_turn = turnInfo
+      turnInfo.textContent = `Current Turn: ${turn}`;
+    }
+
+    function makeMove() {
+      const character = document.getElementById("character-select").value;
+      const direction = document.getElementById("direction-select").value;
+
+      const moveMessage = {
+        type: "move",
+        character: character,
+        direction: direction,
+      };
+      ws.send(JSON.stringify(moveMessage));
+    }
+
+    function updateCharacterOptions(characters) {
+      console.log("chars ", characters)
+      const characterSelect = document.getElementById("character-select");
+      characterSelect.innerHTML = "";
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.text = "Select a character";
+      characterSelect.appendChild(defaultOption);
+
+      characters.forEach(char => {
+        const option = document.createElement("option");
+        option.value = char;
+        option.text = char;
+        characterSelect.appendChild(option);
+      });
+    }
+
+    function updateSelectionOptions(items, selectId) {
+      const selectElement = document.getElementById('direction-select');
+      selectElement.innerHTML = "";
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.text = "Please select an option";
+      selectElement.appendChild(defaultOption);
+
+      items.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.text = item.label;
+        selectElement.appendChild(option);
+      });
+    }
+
+
+
+
+  </script>
+</body>
+
+</html>

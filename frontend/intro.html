@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Setup Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            flex-direction: column;
+        }
+
+        #setup-container {
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        #setup-container h2 {
+            margin-bottom: 20px;
+        }
+
+        #setup-container input,
+        #setup-container select,
+        #setup-container button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .player-section {
+            margin: 20px 0;
+        }
+
+        .player-section h3 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="setup-container">
+
+        <!-- Player 1 and Player 2 sections -->
+        <div class="player-section">
+            <h3>Player A Pieces</h3>
+            <input type="text" id="player-a-pieces" placeholder="Enter Player A pieces (e.g., p,p,p,h1,h2)" />
+        </div>
+        <div class="player-section">
+            <h3>Player B Pieces</h3>
+            <input type="text" id="player-b-pieces" placeholder="Enter Player B pieces (e.g., p,p,p,h1,h2)" />
+        </div>
+
+        <button onclick="startGame()">Submit</button>
+    </div>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8765");
+
+        ws.onmessage = (event) => {
+            try {
+                const rawData = event.data; // Store the raw data for error logging
+
+                const response = JSON.parse(rawData);
+
+                if (response.error) {
+                    // Handle error response from the server
+                    console.error("Server error:", response.error);
+                    // You might want to show an error message to the user here
+                } else if (response.mssg === 'success') {
+                    // Handle valid game state response
+                    window.location.href = "p.html";
+                }
+            } catch (e) {
+                console.error("Failed to parse response:", e);
+                console.error("Received data:", rawData);
+            }
+        };
+
+        function startGame() {
+
+            // Get pieces for both players
+            const playerAPieces = document.getElementById('player-a-pieces').value;
+            const playerBPieces = document.getElementById('player-b-pieces').value;
+
+
+            // Create the register message with pieces for both players
+            const registerMessage = {
+                type: "init",
+                playerA_pieces: playerAPieces,
+                playerB_pieces: playerBPieces
+            };
+            ws.send(JSON.stringify(registerMessage));
+        }
+
+    </script>
+</body>
+
+</html>

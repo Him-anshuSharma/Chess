@@ -66,15 +66,48 @@ class Game:
         self.players = {}
         self.turn = None
 
-    def add_player(self, player_id, characters):
+    def add_player(self, player_id, character_names):
+        # Convert character names to Character objects
+        temp = character_names.split(',')
+        character_list = []
+    
+        # Convert character names to Character objects
+        pc = 1;
+        for c in temp:
+            if(c.upper() == 'P'):
+                character_list.append(f"P{pc}")
+                pc = pc + 1
+            else:
+                character_list.append(c.upper())
+        characters = []
+        for c in character_list:
+            characters.append(Character(player_id=player_id, name=c))
+        
+        print(f"Player ID: {player_id}, Character Names: {character_list}")
+        print(f"Number of characters: {len(characters)}")
+        
+        # Add the player with their characters to the players dictionary
         self.players[player_id] = characters
-        self.place_characters(player_id, characters)
+        
+        # Place the characters on the board
+        self.place_characters(player_id)
 
-    def place_characters(self, player_id, characters):
-        row = 0 if player_id == 'A' else BOARD_SIZE - 1
-        for i, character in enumerate(characters):
+
+
+    def place_characters(self, player_id):
+        row = 0 if len(self.players) == 1 else BOARD_SIZE - 1
+        i = 0
+        pc = 1
+        print(len(self.players[player_id]))
+        for character in self.players[player_id]:
+            print(i)
             character.set_position(row, i)
-            self.board[row][i] = f'{player_id}-{character.name}'
+            if(character.name == 'P' or character.name == 'p'):
+                self.board[row][i] = f'{player_id}-{character.name.upper()}{pc}'
+                pc = pc+1
+            else:
+                 self.board[row][i] = f'{player_id}-{character.name.upper()}'
+            i = i+1
 
     def is_valid_move(self, player_id, character_name, new_position):
         x, y = new_position
@@ -115,5 +148,4 @@ class Game:
             return False
 
     def get_game_state(self):
-        json_temp = json.dumps(self.board)
-        return json_temp
+        return self.board
