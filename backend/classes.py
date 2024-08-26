@@ -126,24 +126,21 @@ class Game:
 
     def move_character(self, player_id, character_name, direction):
         character = next(c for c in self.players[player_id] if c.name == character_name)
-        print(type(character))
         new_position = character.move(direction)
         if self.is_valid_move(player_id, character_name, new_position):
             old_x, old_y = character.position
             new_x, new_y = new_position
+            cell = self.board[new_x][new_y]
             # Clear the old position
             self.board[old_x][old_y] = ''
-            if(self.board[new_x][new_y] != ''):
-                temp = self.board[new_x][new_y].split('-')
+            if(cell != ''):
+                temp = cell.split('-')
                 playerid = temp[0]
                 piece = temp[1]
-                for p in self.players.keys():
-                    if(p == playerid):
-                        for c in self.players[p]:
-                            if(c == piece):
-                                self.players[p].remove(c)
-
-
+                for p in self.players[playerid]:
+                    if(p.name == piece):
+                        self.players[playerid].remove(p)
+                        break
 
             # Update character's position
             character.set_position(new_x, new_y)

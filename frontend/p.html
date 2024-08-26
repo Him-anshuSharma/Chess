@@ -84,6 +84,23 @@
     #controls button:hover {
       background-color: #0056b3;
     }
+
+    /* Style for dynamic alert button */
+    #dynamic-button {
+      display: none; /* Hidden by default */
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: #f44336;
+      color: white;
+      cursor: pointer;
+    }
+
+    #dynamic-button:hover {
+      background-color: #d32f2f;
+    }
   </style>
 </head>
 
@@ -109,10 +126,10 @@
     </select>
 
     <button onclick="makeMove()">Make Move</button>
+    <button id="dynamic-button" onclick="handleDynamicButtonClick()">OK</button>
   </div>
 
   <script>
-
     const ws = new WebSocket("ws://localhost:8765");
     var current_turn = 'A';
 
@@ -136,8 +153,9 @@
 
         const response = JSON.parse(rawData);
 
-        if (response.error) {
+        if (response.type === "error") {
           console.error("Server error:", response.error);
+          showDynamicButton(response.message);
         } else if (response.type === "character_list") {
           updateCharacterOptions(response.characters);
         } else if (response.type === "turn_update") {
@@ -162,11 +180,11 @@
       console.log("update board ", gameState);
       const gameContainer = document.getElementById("game-container");
       gameContainer.innerHTML = "";
-
+      console.log(gameState)
       const board = gameState;
 
-      for (let row = 0; row < board.length; row++) {
-        for (let col = 0; col < board[row].length; col++) {
+      for (let row = 0; row < 5; row++) {
+        for (let col = 0; col < 5; col++) {
           const cell = document.createElement("div");
           cell.classList.add("cell");
           cell.textContent = board[row][col] || " ";
@@ -211,26 +229,17 @@
       });
     }
 
-    function updateSelectionOptions(items, selectId) {
-      const selectElement = document.getElementById('direction-select');
-      selectElement.innerHTML = "";
-
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "";
-      defaultOption.text = "Please select an option";
-      selectElement.appendChild(defaultOption);
-
-      items.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.value;
-        option.text = item.label;
-        selectElement.appendChild(option);
-      });
+    function showDynamicButton(message) {
+      const dynamicButton = document.getElementById("dynamic-button");
+      dynamicButton.textContent = message;
+      dynamicButton.style.display = "block";
     }
 
-
-
-
+    function handleDynamicButtonClick() {
+      // Hide the button after clicking
+      document.getElementById("dynamic-button").style.display = "none";
+      // Additional actions can be added here if needed
+    }
   </script>
 </body>
 

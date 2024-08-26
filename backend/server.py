@@ -16,7 +16,6 @@ async def handler(websocket):
         async for message in websocket:
             data = json.loads(message)
             if data['type'] == 'move':
-                # Determine which player is making the move
                 current_player = 'A' if turnA else 'B'
                 # Perform the move in the game
                 success = game.move_character(current_player, data['character'], data['direction'])
@@ -30,6 +29,12 @@ async def handler(websocket):
                         'curr': 'A' if turnA else 'B'
                     }
                     await websocket.send(json.dumps(response))
+                    l = []
+                    for c in game.players['A' if turnA else 'B']:
+                        l.append(c.name)
+                    data = json.dumps({'type' : 'characters','data':l})
+                    print(data)
+                    await websocket.send(data)
                 else:
                     # Handle move failure if needed
                     response = {
@@ -41,7 +46,6 @@ async def handler(websocket):
                 # Check which pieces to use based on player_id
                 player_a_p = data['playerA_pieces']
                 player_b_p = data['playerB_pieces']
-                print(player_a_p,player_b_p)
                 game.add_player(player_id='A', character_names=player_a_p)
                 game.add_player(player_id='B', character_names=player_b_p)
                 await websocket.send(json.dumps({'mssg': 'success'}))
@@ -52,7 +56,6 @@ async def handler(websocket):
                 for c in game.players[data['id']]:
                     l.append(c.name)
                 data = json.dumps({'type' : 'characters','data':l})
-                print(data)
                 await websocket.send(data)
 
     except Exception as e:
