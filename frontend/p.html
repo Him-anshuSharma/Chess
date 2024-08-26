@@ -142,6 +142,51 @@
         height: 520px;
       }
     }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+      border-radius: 10px;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .modal-content button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-content button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 
@@ -170,6 +215,14 @@
     </select>
 
     <button onclick="makeMove()">Make Move</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="gameOverModal" class="modal">
+    <div class="modal-content">
+      <h2 id="gameOverMessage"></h2>
+      <button onclick="startNewGame()">Next Game</button>
+    </div>
   </div>
 
   <script>
@@ -201,7 +254,7 @@
         } else if (response.type === "characters") {
           updateCharacterOptions(response.data);
         } else if (response.type === 'over') {
-          showAlert(current_turn === 'A' ? 'B won' : 'A won');
+          showGameOverPopup(current_turn === 'A' ? 'B won' : 'A won');
         } else {
           updateTurnInfo(response.curr);
           updateBoard(response.data);
@@ -261,16 +314,39 @@
     }
 
     function updateHistory(history) {
-      historyTextArea = document.getElementById('history')
-      console.log('uh ', history)
-      historyTextArea.innerHTML =  history
+      const historyTextArea = document.getElementById('history');
+      historyTextArea.innerHTML = history;
     }
 
-
-    function showAlert(message) {
-      alert(message);
-      
+    function showGameOverPopup(message) {
+      const modal = document.getElementById('gameOverModal');
+      const messageElement = document.getElementById('gameOverMessage');
+      messageElement.textContent = message;
+      modal.style.display = 'flex';
     }
+
+    function showAlert(mssg){
+      alert(mssg)
+    }
+
+    function startNewGame() {
+      const modal = document.getElementById('gameOverModal');
+      modal.style.display = 'none';
+
+      // Notify the server to reset the game state or handle it accordingly
+      const newGameMessage = { type: 'newGame' };
+      ws.send(JSON.stringify(newGameMessage));
+      window.location.href = "intro.html";
+
+    }
+
+    // Close the modal when clicking outside of the modal-content
+    window.onclick = function(event) {
+      const modal = document.getElementById('gameOverModal');
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    };
   </script>
 </body>
 

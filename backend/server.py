@@ -7,10 +7,11 @@ from classes import Game,Character,Pawn,Hero1,Hero2
 # List of connected clients
 connected_clients = []
 
-myset = set()
+
 game = Game()
 
 async def handler(websocket):
+    global game
     turnA = True
     history = ''
     try:
@@ -63,6 +64,8 @@ async def handler(websocket):
                     l.append(c.name)
                 data = json.dumps({'type' : 'characters','data':l})
                 await websocket.send(data)
+            elif data['type'] == 'newGame':
+                game = Game()
 
     except Exception as e:
         print(f"Exception occurred: {e}")
