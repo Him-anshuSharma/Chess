@@ -1,5 +1,17 @@
 # Turn-Based Game Documentation
 
+## Instructions
+
+1. **Start the Server**
+   - Run the server using the following command:
+     ```bash
+     python3 server.py
+     ```
+
+2. **Open the Game**
+   - After starting the server, open `intro.html` in your web browser to set up the game.
+   - Follow the instructions in `intro.html` to input pieces and start the game.
+
 ## `player.html`
 
 ### Overview
