@@ -11,11 +11,12 @@ body {
     margin: 0;
     padding: 0 10px;
     box-sizing: border-box;
-  }
-  
-  #turn-info {
+}
+
+#turn-info {
     margin-bottom: 20px;
-    font-size: 5vw; /* Responsive font size */
+    font-size: 5vw;
+    /* Responsive font size */
     font-weight: bold;
     color: #333;
     text-shadow: 1px 1px 2px #aaa;
@@ -24,9 +25,9 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
     text-align: center;
-  }
-  
-  #game-container {
+}
+
+#game-container {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(5, 1fr);
@@ -37,12 +38,14 @@ body {
     background-color: #fff;
     border-radius: 10px;
     width: 90vw;
-    max-width: 500px; /* Limits max width */
+    max-width: 500px;
+    /* Limits max width */
     height: 90vw;
-    max-height: 500px; /* Limits max height */
-  }
-  
-  .cell {
+    max-height: 500px;
+    /* Limits max height */
+}
+
+.cell {
     width: 100%;
     height: 100%;
     background-color: #fff;
@@ -50,95 +53,105 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 3vw; /* Responsive font size */
+    font-size: 3vw;
+    /* Responsive font size */
     font-weight: bold;
     color: #333;
     transition: background-color 0.3s ease;
-  }
-  
-  .cell:hover {
+}
+
+.cell:hover {
     background-color: #f0f0f0;
-  }
-  
-  #controls {
+}
+
+#controls {
     text-align: center;
-    font-size: 4vw; /* Responsive font size */
-  }
-  
-  #controls select,
-  #controls button {
+    font-size: 4vw;
+    /* Responsive font size */
+}
+
+#controls select,
+#controls button {
     margin: 5px;
     padding: 8px;
-    font-size: 4vw; /* Responsive font size */
+    font-size: 4vw;
+    /* Responsive font size */
     border-radius: 5px;
     border: 1px solid #ccc;
     background-color: #fff;
-  }
-  
-  #controls button {
+}
+
+#controls button {
     cursor: pointer;
     background-color: #007bff;
     color: white;
     border: none;
-  }
-  
-  #controls button:hover {
+}
+
+#controls button:hover {
     background-color: #0056b3;
-  }
-  
-  #game-and-history {
+}
+
+#game-and-history {
     display: flex;
-    flex-direction: column; /* Stacks items on small screens */
+    flex-direction: column;
+    /* Stacks items on small screens */
     justify-content: center;
     align-items: center;
     gap: 20px;
-    width: 100%; /* Takes up full width */
-  }
-  
-  #history {
+    width: 100%;
+    /* Takes up full width */
+}
+
+#history {
     width: 90vw;
-    max-width: 300px; /* Limits max width */
-    height: 40vh; /* Responsive height */
+    max-width: 300px;
+    /* Limits max width */
+    height: 40vh;
+    /* Responsive height */
     border: 1px solid #333;
     border-radius: 5px;
     padding: 10px;
     background-color: #fff;
-    font-size: 3vw; /* Responsive font size */
+    font-size: 3vw;
+    /* Responsive font size */
     color: #333;
     overflow-y: auto;
-  }
-  
-  @media (min-width: 768px) {
+}
+
+@media (min-width: 768px) {
+
     /* Styles for larger screens */
     #game-and-history {
-      flex-direction: row; /* Side-by-side on larger screens */
+        flex-direction: row;
+        /* Side-by-side on larger screens */
     }
-  
+
     #controls {
-      font-size: 18px;
+        font-size: 18px;
     }
-  
+
     #controls select,
     #controls button {
-      font-size: 16px;
+        font-size: 16px;
     }
-  
+
     .cell {
-      font-size: 24px;
+        font-size: 24px;
     }
-  
+
     #turn-info {
-      font-size: 28px;
+        font-size: 28px;
     }
-  
+
     #history {
-      font-size: 16px;
-      height: 520px;
+        font-size: 16px;
+        height: 520px;
     }
-  }
-  
-  /* Modal styles */
-  .modal {
+}
+
+/* Modal styles */
+.modal {
     display: none;
     position: fixed;
     z-index: 1;
@@ -150,9 +163,9 @@ body {
     background-color: rgba(0, 0, 0, 0.4);
     justify-content: center;
     align-items: center;
-  }
-  
-  .modal-content {
+}
+
+.modal-content {
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
@@ -161,14 +174,14 @@ body {
     max-width: 400px;
     text-align: center;
     border-radius: 10px;
-  }
-  
-  .modal-content h2 {
+}
+
+.modal-content h2 {
     margin-bottom: 20px;
     font-size: 24px;
-  }
-  
-  .modal-content button {
+}
+
+.modal-content button {
     padding: 10px 20px;
     font-size: 18px;
     background-color: #007bff;
@@ -176,9 +189,47 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-  }
-  
-  .modal-content button:hover {
+}
+
+.modal-content button:hover {
     background-color: #0056b3;
-  }
-  
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    flex-direction: column;
+}
+
+#setup-container {
+    background-color: #fff;
+    padding: 50px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+#setup-container h2 {
+    margin-bottom: 20px;
+}
+
+#setup-container input,
+#setup-container select,
+#setup-container button {
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+}
+
+.player-section {
+    margin: 20px 0;
+}
+
+.player-section h3 {
+    margin-bottom: 10px;
+}
