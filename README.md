@@ -12,10 +12,10 @@
    - After starting the server, open `intro.html` in your web browser to set up the game.
    - Follow the instructions in `intro.html` to input pieces and start the game.
 
-## `p.html`
+## `board.html`
 
 ### Overview
-The `p.html` file is the client-side interface for the turn-based game. It allows players to view the game board, select characters, and make moves. It also includes a history section and a modal for game-over scenarios.
+The `board.html` file is the client-side interface for the turn-based game. It allows players to view the game board, select characters, and make moves. It also includes a history section and a modal for game-over scenarios.
 
 ### Key Sections
 
